@@ -49,12 +49,20 @@ async function fetchAnimes() {
     try {
         const response = await fetch(url, options);
         const data = await response.json();
-        const animes = data.data.Page.media;
+        
+        // Verificamos la respuesta de la API
+        console.log(data);
 
-        totalPages = Math.ceil(data.data.Page.pageInfo.total / 10);
-        displayAnimes(animes);
+        if (data.data && data.data.Page && data.data.Page.media) {
+            const animes = data.data.Page.media;
+            totalPages = Math.ceil(data.data.Page.pageInfo.total / 10);
+            displayAnimes(animes);
+        } else {
+            console.error("No se encontraron animes en la respuesta.");
+            document.getElementById("anime-list").innerHTML = "<p>No se encontraron animes.</p>";
+        }
     } catch (error) {
-        console.error("Error fetching anime data:", error);
+        console.error("Error al obtener los datos:", error);
         document.getElementById("anime-list").innerHTML = "<p>Error al cargar los animes.</p>";
     }
 }
@@ -63,13 +71,16 @@ function displayAnimes(animes) {
     const animeList = document.getElementById("anime-list");
     animeList.innerHTML = "";
 
+    if (animes.length === 0) {
+        animeList.innerHTML = "<p>No se encontraron animes.</p>";
+    }
+
     animes.forEach(anime => {
         const animeCard = document.createElement("div");
         animeCard.className = "anime-card";
 
         const isFavorite = favorites.some(fav => fav.id === anime.id);
 
-        // Estrellas de calificación
         const stars = "★".repeat(Math.floor(anime.averageScore / 10)) + "☆".repeat(10 - Math.floor(anime.averageScore / 10));
 
         animeCard.innerHTML = `
