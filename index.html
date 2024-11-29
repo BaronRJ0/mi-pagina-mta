@@ -11,17 +11,41 @@
         <h1>Anime Calificaciones</h1>
         <nav>
             <ul>
-                <li><a href="#calificaciones">Calificaciones</a></li>
+                <li><a href="#calificaciones">Animes</a></li>
                 <li><a href="#contacto">Contacto</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
+        <section id="filters">
+            <h2>Filtrar Animes</h2>
+            <form id="filters-form">
+                <label for="season">Temporada:</label>
+                <select id="season" name="season">
+                    <option value="WINTER">Invierno</option>
+                    <option value="SPRING">Primavera</option>
+                    <option value="SUMMER">Verano</option>
+                    <option value="FALL">Otoño</option>
+                </select>
+
+                <label for="year">Año:</label>
+                <input type="number" id="year" name="year" value="2024" min="2000" max="2100">
+
+                <label for="rating">Calificación Mínima:</label>
+                <input type="number" id="rating" name="rating" value="0" min="0" max="100">
+
+                <button type="submit">Aplicar Filtro</button>
+            </form>
+        </section>
+
         <section id="calificaciones">
             <h2>Animes Populares</h2>
             <div id="anime-list">
-                <p>Cargando calificaciones...</p>
+                <p>Cargando animes...</p>
+            </div>
+            <div id="pagination">
+                <button id="load-more" onclick="loadMoreAnimes()">Cargar más</button>
             </div>
         </section>
     </main>
