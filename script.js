@@ -1,8 +1,9 @@
+// Función para obtener animes populares de AniList
 async function fetchAnimes() {
     const query = `
         query {
             Page(page: 1, perPage: 10) {
-                media(type: ANIME, season: FALL, seasonYear: 2024, sort: POPULARITY_DESC) {
+                media(type: ANIME, sort: POPULARITY_DESC) {
                     title {
                         romaji
                     }
@@ -10,7 +11,7 @@ async function fetchAnimes() {
                         large
                     }
                     averageScore
-                    episodes
+                    siteUrl
                     status
                 }
             }
@@ -36,9 +37,10 @@ async function fetchAnimes() {
     }
 }
 
+// Función para mostrar los animes en la página
 function displayAnimes(animes) {
     const animeList = document.getElementById("anime-list");
-    animeList.innerHTML = ""; // Limpia el contenido anterior
+    animeList.innerHTML = ""; // Limpiar el contenido de animes anterior
 
     animes.forEach(anime => {
         const animeCard = document.createElement("div");
@@ -47,9 +49,9 @@ function displayAnimes(animes) {
         animeCard.innerHTML = `
             <img src="${anime.coverImage.large}" alt="${anime.title.romaji}">
             <h3>${anime.title.romaji}</h3>
-            <p>Calificación: ${anime.averageScore || "N/A"}</p>
-            <p>Episodios: ${anime.episodes || "Por confirmar"}</p>
+            <p>Calificación: ${anime.averageScore || "N/A"} / 100</p>
             <p>Estado: ${anime.status}</p>
+            <p><a href="${anime.siteUrl}" target="_blank">Ver más</a></p>
         `;
 
         animeList.appendChild(animeCard);
