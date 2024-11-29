@@ -1,47 +1,60 @@
-// Simulación de datos obtenidos de una API de anime
-const animes = [
-    {
-        title: "Shingeki no Kyojin: The Final Season",
-        image: "https://via.placeholder.com/300x400",
-        rating: 9.2,
-        site: "MyAnimeList"
-    },
-    {
-        title: "Jujutsu Kaisen 2nd Season",
-        image: "https://via.placeholder.com/300x400",
-        rating: 8.7,
-        site: "MyAnimeList"
-    },
-    {
-        title: "Tokyo Revengers: Tenjiku-hen",
-        image: "https://via.placeholder.com/300x400",
-        rating: 8.1,
-        site: "Anilist"
-    },
-    {
-        title: "One Piece",
-        image: "https://via.placeholder.com/300x400",
-        rating: 9.0,
-        site: "MyAnimeList"
-    }
-];
+async function fetchAnimes() {
+    const query = `
+        query {
+            Page(page: 1, perPage: 10) {
+                media(type: ANIME, season: FALL, seasonYear: 2024, sort: POPULARITY_DESC) {
+                    title {
+                        romaji
+                    }
+                    coverImage {
+                        large
+                    }
+                    averageScore
+                    episodes
+                    status
+                }
+            }
+        }
+    `;
 
-function loadAnimes() {
+    const url = "https://graphql.anilist.co";
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ query })
+    };
+
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+        displayAnimes(data.data.Page.media);
+    } catch (error) {
+        console.error("Error fetching anime data:", error);
+        document.getElementById("anime-list").innerHTML = "<p>Error al cargar los animes.</p>";
+    }
+}
+
+function displayAnimes(animes) {
     const animeList = document.getElementById("anime-list");
+    animeList.innerHTML = ""; // Limpia el contenido anterior
 
     animes.forEach(anime => {
         const animeCard = document.createElement("div");
         animeCard.className = "anime-card";
 
         animeCard.innerHTML = `
-            <img src="${anime.image}" alt="${anime.title}">
-            <h3>${anime.title}</h3>
-            <p>Calificación: ${anime.rating} (${anime.site})</p>
+            <img src="${anime.coverImage.large}" alt="${anime.title.romaji}">
+            <h3>${anime.title.romaji}</h3>
+            <p>Calificación: ${anime.averageScore || "N/A"}</p>
+            <p>Episodios: ${anime.episodes || "Por confirmar"}</p>
+            <p>Estado: ${anime.status}</p>
         `;
 
         animeList.appendChild(animeCard);
     });
 }
 
-// Cargar animes al cargar la página
-document.addEventListener("DOMContentLoaded", loadAnimes);
+// Cargar los animes al iniciar la página
+document.addEventListener("DOMContentLoaded", fetchAnimes);
