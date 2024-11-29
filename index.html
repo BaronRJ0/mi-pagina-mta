@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Servidor MTA</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Bienvenido a Mi Servidor MTA</h1>
+  </header>
+  <main>
+    <p>Conéctate a nuestro servidor y descarga recursos desde aquí.</p>
+    <button id="upload-btn">Subir Recursos</button>
+    <form id="upload-form" method="POST" action="https://tu-servidor-hosting.com/upload" enctype="multipart/form-data">
+      <input type="file" name="file" id="file-input">
+      <button type="submit">Subir</button>
+    </form>
+  </main>
+  <footer>
+    <p>© 2024 Mi Servidor MTA</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
