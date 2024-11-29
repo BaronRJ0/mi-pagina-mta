@@ -45,6 +45,44 @@ main {
     padding: 20px;
 }
 
+#filters {
+    margin-bottom: 20px;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#filters form {
+    display: flex;
+    flex-direction: column;
+}
+
+#filters form label {
+    margin: 5px 0;
+}
+
+#filters form select, #filters form input {
+    margin-bottom: 10px;
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+#filters form button {
+    padding: 10px;
+    background-color: #1a1a1d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#filters form button:hover {
+    background-color: #f39c12;
+}
+
 #anime-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -80,6 +118,11 @@ main {
     font-size: 0.9rem;
     margin: 5px 0;
     color: #666;
+}
+
+#pagination {
+    text-align: center;
+    margin-top: 20px;
 }
 
 footer {
