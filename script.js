@@ -1,134 +1,95 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
-    color: #333;
+let currentPage = 1;
+let totalPages = 1;
+let filters = {
+    season: "FALL",
+    year: 2024,
+    rating: 0,
+};
+
+async function fetchAnimes() {
+    const query = `
+        query($season: MediaSeason, $year: Int, $rating: Int, $page: Int) {
+            Page(page: $page, perPage: 10) {
+                media(type: ANIME, season: $season, seasonYear: $year, sort: POPULARITY_DESC, minimumRating: $rating) {
+                    title {
+                        romaji
+                    }
+                    coverImage {
+                        large
+                    }
+                    averageScore
+                    siteUrl
+                    status
+                    genres
+                    description
+                }
+            }
+        }
+    `;
+
+    const url = "https://graphql.anilist.co";
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            query,
+            variables: { ...filters, page: currentPage },
+        }),
+    };
+
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+        const animes = data.data.Page.media;
+
+        totalPages = Math.ceil(data.data.Page.pageInfo.total / 10);
+        displayAnimes(animes);
+    } catch (error) {
+        console.error("Error fetching anime data:", error);
+        document.getElementById("anime-list").innerHTML = "<p>Error al cargar los animes.</p>";
+    }
 }
 
-header {
-    background-color: #1a1a1d;
-    color: white;
-    padding: 20px 10px;
-    text-align: center;
+function displayAnimes(animes) {
+    const animeList = document.getElementById("anime-list");
+    animeList.innerHTML = ""; // Limpiar el contenido de animes anterior
+
+    animes.forEach(anime => {
+        const animeCard = document.createElement("div");
+        animeCard.className = "anime-card";
+
+        animeCard.innerHTML = `
+            <img src="${anime.coverImage.large}" alt="${anime.title.romaji}">
+            <h3>${anime.title.romaji}</h3>
+            <p>Calificación: ${anime.averageScore || "N/A"} / 100</p>
+            <p>Géneros: ${anime.genres.join(", ")}</p>
+            <p>Estado: ${anime.status}</p>
+            <p><a href="${anime.siteUrl}" target="_blank">Ver más</a></p>
+            <p>${anime.description.slice(0, 150)}...</p>
+        `;
+
+        animeList.appendChild(animeCard);
+    });
 }
 
-header h1 {
-    margin: 0;
-    font-size: 2.5rem;
+function loadMoreAnimes() {
+    if (currentPage < totalPages) {
+        currentPage++;
+        fetchAnimes();
+    }
 }
 
-nav ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    margin: 10px 0 0;
-}
+// Filtro dinámico
+document.getElementById("filters-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    filters.season = document.getElementById("season").value;
+    filters.year = parseInt(document.getElementById("year").value);
+    filters.rating = parseInt(document.getElementById("rating").value);
+    currentPage = 1; // Resetear la página a la 1
+    fetchAnimes();
+});
 
-nav li {
-    margin: 0 15px;
-}
-
-nav a {
-    text-decoration: none;
-    color: white;
-    font-size: 1rem;
-    transition: color 0.3s;
-}
-
-nav a:hover {
-    color: #f39c12;
-}
-
-main {
-    padding: 20px;
-}
-
-#filters {
-    margin-bottom: 20px;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-#filters form {
-    display: flex;
-    flex-direction: column;
-}
-
-#filters form label {
-    margin: 5px 0;
-}
-
-#filters form select, #filters form input {
-    margin-bottom: 10px;
-    padding: 8px;
-    font-size: 1rem;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-}
-
-#filters form button {
-    padding: 10px;
-    background-color: #1a1a1d;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-#filters form button:hover {
-    background-color: #f39c12;
-}
-
-#anime-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.anime-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-}
-
-.anime-card:hover {
-    transform: scale(1.05);
-}
-
-.anime-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.anime-card h3 {
-    margin: 10px 0;
-    font-size: 1.2rem;
-}
-
-.anime-card p {
-    font-size: 0.9rem;
-    margin: 5px 0;
-    color: #666;
-}
-
-#pagination {
-    text-align: center;
-    margin-top: 20px;
-}
-
-footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #1a1a1d;
-    color: white;
-    font-size: 0.9rem;
-}
+// Cargar animes al inicio
+document.addEventListener("DOMContentLoaded", fetchAnimes);
